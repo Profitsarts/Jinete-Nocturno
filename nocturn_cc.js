@@ -1,5 +1,5 @@
 // nocturn_cc.js — Novation Nocturn -> generic MIDI CC, with encoder banks.
-// Used by "Nocturn Generic MIDI CC.amxd" (Max for Live).
+// Used by "Jinete Nocturno.amxd" (Max for Live).
 // Talks to the 11nocturn external by 11OLSEN.DE. No Live API, no fixed mapping.
 //
 // Edit the CONFIG block below and save: autowatch reloads it live.
@@ -68,7 +68,7 @@ var DEBUG_LINES  = 80;
 // Where the button modes are stored. Absolute path. Change it if you move the
 // device folder. Leave it empty to disable saving.
 var SETTINGS_FILE = "/Users/condres/Muzik/Ableton/User Library/Presets/" +
-                    "MIDI Effects/Max MIDI Effect/Nocturn Generic MIDI CC/" +
+                    "MIDI Effects/Max MIDI Effect/Jinete Nocturno/" +
                     "nocturn_settings.json";
 // ---------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build "Nocturn Generic MIDI CC.amxd" from the factory Max MIDI Effect template.
+"""Build "Jinete Nocturno.amxd" from the factory Max MIDI Effect template.
 
 Two design notes worth keeping:
 
@@ -275,7 +275,7 @@ p['boxes'] = boxes; p['lines'] = lines
 p['rect'] = [80.0, 100.0, 760.0, 800.0]
 p['openrect'] = [0.0, 0.0, 250.0, float(Y_SEEN + H_SEEN + 3)]
 p['openinpresentation'] = 1
-p['title'] = "Nocturn Generic MIDI CC"
+p['title'] = "Jinete Nocturno"
 p['description'] = "Novation Nocturn as a free MIDI CC controller"
 p['digest'] = "Nocturn -> generic MIDI CC"
 p['tags'] = "nocturn midi cc controller"

@@ -1,10 +1,10 @@
-# Nocturn-CC: Novation Nocturn MIDI CC Liberation
+# Jinete Nocturno (Nocturn-CC): Novation Nocturn MIDI CC Liberation
 
 > **Resurrecting the Novation Nocturn into a high-performance, class-free MIDI Control Change surface for Ableton Live and modern DAWs.**
 
 | Physical Novation Nocturn Hardware | Ableton Live Max for Live Interface |
 |:---:|:---:|
-| <img src="assets/hardware.png" alt="Novation Nocturn Hardware" width="480"/> | <img src="assets/device_ui.png" alt="Nocturn Generic MIDI CC Device UI" width="360"/> |
+| <img src="assets/hardware.png" alt="Novation Nocturn Hardware" width="480"/> | <img src="assets/device_ui.png" alt="Jinete Nocturno Device UI" width="360"/> |
 
 ---
 
@@ -32,6 +32,9 @@ When operating systems evolved to 64-bit architectures and Apple Silicon transit
 
 * **4 Instant Hardware Banks (32 Encoders)**: Expands the physical 8 knobs into 32 fully independent MIDI CC channels (Bank 1: CC 16–23, Bank 2: CC 24–31, Bank 3: CC 32–39, Bank 4: CC 40–47) with zero latency bank-switching via a bold top tab bar.
 * **Dual-Mode Button Engine**: Each of the 16 tactile buttons can be independently configured in Toggle (latching) or Momentary mode with per-button visual feedback on both the Max for Live interface and the physical hardware LEDs.
+* **Fine-Resolution Shift Mode (0.5x Precision)**: Hold down the physical center Speed Dial click like a shift key to immediately drop encoder sensitivity to 0.5x resolution (two mechanical detents per MIDI CC step). A sub-unit fractional accumulator preserves micro-steps without dead zones, while the acceleration curve is cleanly bypassed for surgical parameter adjustments.
+* **Hardware-Native Shift Visual Feedback**: Engaging Shift mode lights up the entire circular LED ring around the Speed Dial, providing instant tactile and visual confirmation on the controller without occupying extra screen real estate in Ableton Live.
+* **Smart Button Debounce & MIDI Learn Shield**: Filters out repetitive button state bursts from the USB polling loop, ensuring Ableton Live's native `Cmd + M` MIDI Learn captures exactly what you turn or press without ghost triggers.
 * **Adaptive Non-Linear Encoder Acceleration**: Faithfully replicates the tactile responsiveness of professional analog gear—slow rotational movement resolves single-step precision (1 step), while brisk whipping accelerates dynamically up to 9 steps per tick.
 * **Bidirectional 11-LED Ring Display Control**: Drives the physical LED rings dynamically across all 8 encoders and the center Speed Dial, supporting Fill from Minimum, Fill from Maximum, Center Bi-directional, Center Single-direction, and Single Dot modes.
 * **Full Capacitive Touch & Crossfader Integration**: Emits dedicated MIDI messages upon physical touch of the encoder caps, enabling instant channel selection, pop-up parameter focus, or secondary modulation simply by resting your fingertips on the knobs.
@@ -111,7 +114,7 @@ Ableton Live's native `Cmd + M` mapping engine listens exclusively to inputs rec
    * **MIDI From**: `All Ins` (or `No Input`).
    * **Monitor**: `In` (or `Auto`).
    * **MIDI To**: Select `IAC Driver (Nocturn)` -> `Channel 1`.
-4. Drag and drop `Nocturn Generic MIDI CC.amxd` onto this track.
+4. Drag and drop `Jinete Nocturno.amxd` onto this track.
 5. Keep this track completely free of audio instruments, synths, or audio effects. *(Loading an instrument transforms the output selector to `Audio To`, hiding the MIDI bus).*
 
 ---
@@ -178,7 +181,7 @@ The 8 physical rotary encoders map to 32 distinct MIDI CC addresses across 4 swi
 
 ```
 Nocturn-CC/
-├── Nocturn Generic MIDI CC.amxd   # Ready-to-use production Max for Live device
+├── Jinete Nocturno.amxd   # Ready-to-use production Max for Live device
 ├── 11nocturn.mxo/                 # Universal Mach-O 64-bit USB driver (arm64 & x86_64)
 ├── nocturn_cc.js                  # Core JavaScript banking, acceleration & mapping engine
 ├── nocturn_settings.json          # Persistent hardware configuration template
@@ -206,7 +209,7 @@ Nocturn-CC/
 # Rebuild the AMXD device using the factory Max MIDI Effect template
 python3 build_amxd.py \
   "/Applications/Ableton Live 12 Suite.app/Contents/App-Resources/Misc/Max Devices/Max MIDI Effect.amxd" \
-  "Nocturn Generic MIDI CC.amxd"
+  "Jinete Nocturno.amxd"
 ```
 
 ---
