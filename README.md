@@ -2,7 +2,9 @@
 
 > **Resurrecting the Novation Nocturn into a high-performance, class-free MIDI Control Change surface for Ableton Live and modern DAWs.**
 
-![Nocturn Hardware](assets/nocturn_small.png)
+| Physical Novation Nocturn Hardware | Ableton Live Max for Live Interface |
+|:---:|:---:|
+| <img src="assets/hardware.png" alt="Novation Nocturn Hardware" width="480"/> | <img src="assets/device_ui.png" alt="Nocturn Generic MIDI CC Device UI" width="360"/> |
 
 ---
 
@@ -182,9 +184,10 @@ Nocturn-CC/
 ├── nocturn_settings.json          # Persistent hardware configuration template
 ├── build_amxd.py                  # Standalone headless compiler for .amxd patch generation
 ├── assets/                        # High-resolution retina branding & hardware assets
-│   ├── nocturn_logo.png
-│   ├── nocturn_photo.png
-│   └── cells_preview.png
+│   ├── hardware.png               # Physical hardware reference photograph
+│   ├── device_ui.png              # Ableton Live Max for Live device interface
+│   ├── nocturn_logo.png           # Restored Retina vector branding
+│   └── cells_preview.png          # High-contrast button matrix preview
 ├── tools/                         # Automated validation & engineering test harness
 │   ├── wcag.py                    # WCAG 2.1 contrast ratio verification suite
 │   ├── midimon.swift              # Low-level Swift CoreMIDI packet monitor
@@ -225,6 +228,6 @@ All interface colors on the device face have been verified against the **W3C WCA
 
 ## Credits & Acknowledgments
 
-* **Low-Level USB Driver & Protocol**: `11nocturn` Max external originally authored by **11OLSEN.DE** under the GNU GPL.
-* **Architecture, Engineering & Polish**: Developed by **Profitsarts & Claude Code** (2026).
+* **Low-Level USB Driver & Reverse-Engineering**: Authored by **[@11ols](https://github.com/11ols)** ([11OLSEN.DE](https://11olsen.de)), upstream repository: [11ols/11nocturn](https://github.com/11ols/11nocturn) under the GNU General Public License.
+* **Max for Live Architecture, Modernization & Release**: Developed by **Profitsarts & Claude Code** (2026).
 * **License**: Released under the [GNU General Public License v3.0](LICENSE). Free for musicians, producers, and developers worldwide.
