@@ -1,4 +1,4 @@
-# Jinete Nocturno (Nocturn-CC): Novation Nocturn MIDI CC Liberation
+# Jinete Nocturno: Novation Nocturn MIDI CC Liberation
 
 > **Resurrecting the Novation Nocturn into a high-performance, class-free MIDI Control Change surface for Ableton Live and modern DAWs.**
 
@@ -24,7 +24,7 @@ Yet, Novation made a fatal architectural decision driven by proprietary vendor l
 
 When operating systems evolved to 64-bit architectures and Apple Silicon transitioned macOS, Novation quietly terminated Automap development, discontinued driver updates, and refused to open-source the firmware or release class-compliant descriptors. Hundreds of thousands of pristine, physically indestructible Nocturn units worldwide were instantly turned into digital paperweights—deliberately converted into **"abandonhardware"** while their owners were defrauded of a controller that had decades of operational life left in it.
 
-**Nocturn-CC is the definitive liberation project.** Bypassing Automap entirely, it communicates directly with the low-level USB endpoint via a native 64-bit universal external (`11nocturn.mxo`), converting every physical knob, button, fader, and touch sensor into standard, bankable MIDI Control Change (CC) messages directly assignable in Ableton Live via native `Cmd + M` mapping.
+**Jinete Nocturno is the definitive liberation project.** Bypassing Automap entirely, it communicates directly with the low-level USB endpoint via a native 64-bit universal external (`11nocturn.mxo`), converting every physical knob, button, fader, and touch sensor into standard, bankable MIDI Control Change (CC) messages directly assignable in Ableton Live via native `Cmd + M` mapping.
 
 ---
 
@@ -47,7 +47,7 @@ When operating systems evolved to 64-bit architectures and Apple Silicon transit
 
 ## Signal Flow Architecture
 
-Because Max for Live devices run inside Ableton Live's internal audio/MIDI processing graph, an M4L device cannot directly register a virtual CoreMIDI input port in macOS. To achieve seamless, native `Cmd + M` mapping across any parameter, track, or third-party VST plugin in Ableton Live, `Nocturn-CC` utilizes a streamlined, loopback-free pipeline:
+Because Max for Live devices run inside Ableton Live's internal audio/MIDI processing graph, an M4L device cannot directly register a virtual CoreMIDI input port in macOS. To achieve seamless, native `Cmd + M` mapping across any parameter, track, or third-party VST plugin in Ableton Live, `Jinete Nocturno` utilizes a streamlined, loopback-free pipeline:
 
 ```
 [ Novation Nocturn Hardware ]
@@ -133,7 +133,7 @@ Ableton Live's native `Cmd + M` mapping engine listens exclusively to inputs rec
 
 ### Hardware Initialization
 The Novation Nocturn possesses no physical power switch. Upon USB connection, its microcontroller remains unpowered in a dormant state (LEDs completely off) until the host sends the low-level `state 1` USB command.
-* `Nocturn-CC` automatically sends a single initialization command 1.0 second after loading.
+* `Jinete Nocturno` automatically sends a single initialization command 1.0 second after loading.
 * If you connect the USB cable while Live is already running, simply click the **`re-init`** button on the device face.
 
 ### The Single-Instance Rule
@@ -180,7 +180,7 @@ The 8 physical rotary encoders map to 32 distinct MIDI CC addresses across 4 swi
 ## Repository Structure
 
 ```
-Nocturn-CC/
+Jinete-Nocturno/
 ├── Jinete Nocturno.amxd   # Ready-to-use production Max for Live device
 ├── 11nocturn.mxo/                 # Universal Mach-O 64-bit USB driver (arm64 & x86_64)
 ├── nocturn_cc.js                  # Core JavaScript banking, acceleration & mapping engine
@@ -203,7 +203,7 @@ Nocturn-CC/
 
 ## Compiling from Source
 
-`Nocturn-CC` includes a fully reproducible, headless Python build tool (`build_amxd.py`) that generates the binary `.amxd` file directly from raw Max JSON representations without requiring the Max graphical editor:
+`Jinete Nocturno` includes a fully reproducible, headless Python build tool (`build_amxd.py`) that generates the binary `.amxd` file directly from raw Max JSON representations without requiring the Max graphical editor:
 
 ```zsh
 # Rebuild the AMXD device using the factory Max MIDI Effect template
