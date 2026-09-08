@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ableton / Max cache
+Ableton Folder Info/
+*.bak
+*.bak.*
+*.out
+*.tmp
+
+# Swift builds / binaries
+tools/midimon
+tools/midisend
+
+# Editor
+.vscode/
+.idea/
