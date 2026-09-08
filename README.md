@@ -28,6 +28,15 @@ When operating systems evolved to 64-bit architectures and Apple Silicon transit
 
 ---
 
+## What's New in v1.1.0
+
+* **Fine-Resolution Shift Mode (0.5x Precision)**: Hold down the physical center Speed Dial click like a shift key to drop encoder sensitivity to 0.5x resolution (two mechanical detents per MIDI CC step). Uses a precision sub-unit accumulator so micro-steps never round away, while bypassing the acceleration curve for surgical adjustments.
+* **Hardware Shift Status via LED Ring**: Engaging Shift mode illuminates the entire 11-segment circular LED ring around the center Speed Dial, delivering instant visual feedback directly on the hardware without taking up screen space in Ableton Live.
+* **Smart Button Debounce & MIDI Learn Shield**: Filters out repetitive hardware state bursts from the USB polling loop, guaranteeing clean, reliable `Cmd + M` MIDI Learn assignments without ghost triggers.
+* **Official Release Branding**: Fully consolidated under the official name **Jinete Nocturno**.
+
+---
+
 ## Key Features
 
 * **4 Instant Hardware Banks (32 Encoders)**: Expands the physical 8 knobs into 32 fully independent MIDI CC channels (Bank 1: CC 16–23, Bank 2: CC 24–31, Bank 3: CC 32–39, Bank 4: CC 40–47) with zero latency bank-switching via a bold top tab bar.
