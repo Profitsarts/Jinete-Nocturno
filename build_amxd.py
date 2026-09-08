@@ -206,6 +206,9 @@ PF = box("obj-pf", "newobj", 150, 530, 95,  22, 2, 1, [""], "prepend fader")
 PE = box("obj-pe", "newobj", 255, 530, 110, 22, 2, 1, [""], "prepend encoder")
 PT = box("obj-pt", "newobj", 375, 530, 95,  22, 2, 1, [""], "prepend touch")
 PL = box("obj-pl", "newobj", 480, 530, 90,  22, 2, 1, [""], "prepend link")
+# Outlet 4 is undocumented in the 11Olsen help patch. Wire it so whatever it
+# carries can be identified rather than guessed at.
+PAX = box("obj-pax", "newobj", 580, 560, 90, 22, 2, 1, [""], "prepend aux")
 PBK = box("obj-pbk", "newobj", 620, 480, 90, 22, 2, 1, [""], "prepend bank")
 # one prepend per cell so js learns which button was clicked
 PMDS = []
@@ -249,6 +252,7 @@ link(NOC, 0, PB, 0); link(PB, 0, JS, 0)
 link(NOC, 1, PF, 0); link(PF, 0, JS, 0)
 link(NOC, 2, PE, 0); link(PE, 0, JS, 0)
 link(NOC, 3, PT, 0); link(PT, 0, JS, 0)
+link(NOC, 4, PAX, 0); link(PAX, 0, JS, 0)
 link(NOC, 5, PL, 0); link(PL, 0, JS, 0)
 
 link(TAB, 0, PBK, 0); link(PBK, 0, JS, 0)

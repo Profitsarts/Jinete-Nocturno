@@ -45,6 +45,26 @@ var LED_FEEDBACK = 1;    // 1 = rings and button LEDs follow the internal value
 var START_VALUE  = 64;   // initial value of every encoder, 0-127
 var GREET        = 1;    // 1 = flash every LED once when the hardware wakes up
 
+// Fine mode. Hold the speed dial click like a shift key and every encoder
+// moves at FINE_RATIO of its normal speed, so 0.5 means two detents per step.
+// SHIFT_BUTTON is the button index the click reports. The Nocturn packs its
+// buttons into a spray of 17 outlets, so 16 is the first index past the 16
+// front panel buttons and the likely one. Set it to -1 to switch fine mode off.
+var SHIFT_BUTTON = 16;
+var FINE_RATIO   = 0.5;
+var FINE_ACCEL   = 0;    // 1 = keep the acceleration curve while shift is held
+
+// While we do not know for certain which index the click reports, any button
+// or auxiliary event we cannot place is echoed on this CC with the index as
+// its value, so it can be read off the wire. Set to -1 once fine mode works.
+var DIAG_CC      = -1;
+
+// Temporary instrumentation. Max's post() lands in Live's own Log.txt as
+// "Message from Max", which is readable without opening the Max console.
+// Capped so it can never flood the log the way the old retry loop did.
+var DEBUG        = 1;
+var DEBUG_LINES  = 80;
+
 // Where the button modes are stored. Absolute path. Change it if you move the
 // device folder. Leave it empty to disable saving.
 var SETTINGS_FILE = "/Users/condres/Muzik/Ableton/User Library/Presets/" +
@@ -79,7 +99,19 @@ var btn      = newArray(NBTN, 0);
 var shuttingDown = 0;
 var loadingUI    = 0;
 
+// Held state of the shift button, and the sub-unit remainder each encoder
+// carries so that half steps accumulate instead of being rounded away.
+var dbgCount  = 0;
+var shiftHeld = 0;
+var encFrac   = newArray(NENC + 1, 0.0);
+
 for (var b0 = 0; b0 < NBANK; b0++) { encVal[b0] = newArray(NENC, START_VALUE); }
+
+function dbg(s) {
+    if (!DEBUG || dbgCount >= DEBUG_LINES) { return; }
+    dbgCount += 1;
+    post("NCC " + s + "\n");
+}
 
 function newArray(n, v) {
     var a = [];
@@ -112,7 +144,33 @@ function encoder(idx, raw) {
     }
     half[idx] = 0;
 
-    setEncoder(idx, valueOf(idx) + dir * stepSize(idx));
+    var step = stepSize(idx);
+    if (shiftHeld) {
+        if (!FINE_ACCEL) { step = 1; }
+        step = step * FINE_RATIO;
+    }
+    dbg("enc idx=" + idx + " raw=" + raw + " dir=" + dir + " step=" + step +
+        " shift=" + shiftHeld + " bank=" + curBank);
+    addToEncoder(idx, dir * step);
+}
+
+// Steps can be fractional in fine mode, so the leftover is carried instead of
+// rounded away. Without this a half step would round to zero and the encoder
+// would feel dead rather than precise.
+function addToEncoder(idx, delta) {
+    var f = encFrac[idx] + delta;
+    var whole = (f >= 0) ? Math.floor(f) : Math.ceil(f);
+    f -= whole;
+    if (whole !== 0) {
+        var cur  = valueOf(idx);
+        var next = clip127(cur + whole);
+        if (next === cur) { f = 0; }      // parado en el tope, no acumules
+        dbg("  add whole=" + whole + " cur=" + cur + " next=" + next);
+        setEncoder(idx, next);
+    } else {
+        dbg("  add carry only, frac=" + f);
+    }
+    encFrac[idx] = f;
 }
 
 // Acceleration curve copied from the 11Olsen help patch:
@@ -184,14 +242,27 @@ function fader(v) {
 function button(idx, v) {
     idx = parseInt(idx);
     v   = parseInt(v);
-    if (idx < 0 || idx >= NBTN) { return; }
 
+    // The shift check comes first: its index sits past the 16 front buttons,
+    // so the range test below would throw it away.
+    dbg("btn idx=" + idx + " v=" + v);
+    if (SHIFT_BUTTON >= 0 && idx === SHIFT_BUTTON) { shift(v > 0 ? 1 : 0); return; }
+    if (idx < 0 || idx >= NBTN) { diag(idx); return; }
+
+    var next;
     if (modeOf(idx)) {
         if (v <= 0) { return; }             // act on press only
-        btn[idx] = btn[idx] ? 0 : 1;
+        next = btn[idx] ? 0 : 1;
     } else {
-        btn[idx] = (v > 0) ? 1 : 0;
+        next = (v > 0) ? 1 : 0;
     }
+
+    // The same guard the encoders and the fader already carry. The external
+    // repeats a button's state without it having changed, and every repeat used
+    // to reach the wire as a CC. That stream is what Live's MIDI learn grabs,
+    // ahead of whatever you actually turn.
+    if (next === btn[idx]) { return; }
+    btn[idx] = next;
     sendCC(CC_BUTTON + idx, btn[idx] ? 127 : 0);
     buttonLed(idx, btn[idx]);
 }
@@ -222,6 +293,35 @@ function btnmode(idx, val) {
     saveSettings();
 }
 
+// Held down, every encoder turns at FINE_RATIO speed. The speed dial ring is
+// filled while it lasts, so the feedback is on the hardware and the device
+// face does not need to grow.
+function shift(on) {
+    if (shiftHeld === on) { return; }
+    shiftHeld = on;
+    for (var i = 0; i <= NENC; i++) { encFrac[i] = 0.0; }
+    if (on) {
+        led(ADDR_SD_MODE, 0);      // 0 = fill from the minimum
+        led(ADDR_SD_VAL, 127);
+    } else {
+        led(ADDR_SD_MODE, RING_MODE);
+        led(ADDR_SD_VAL, sdVal);
+    }
+}
+
+// Outlet 4 of the external is undocumented. Echo whatever it carries so it can
+// be identified from the wire instead of guessed at.
+function aux(a, b) {
+    dbg("AUX " + a + " " + b);
+    diag(parseInt(a));
+}
+
+// Echo an unplaced index on DIAG_CC so a MIDI monitor can read it.
+function diag(idx) {
+    if (DIAG_CC < 0) { return; }
+    sendCC(DIAG_CC, clip127(idx));
+}
+
 function touch(idx, v) {
     // Touch sensors are read but unused. Hook your own behaviour here.
 }
@@ -243,12 +343,13 @@ function shutdown() {
 // Raw status and data bytes, not ctlout. In Max for Live only midiout is
 // documented to feed the track's MIDI chain, so we build the CC by hand.
 function sendCC(cc, val) {
-    if (shuttingDown) { return; }
-    if (cc < 0 || cc > 127) { return; }
+    if (shuttingDown) { dbg("  BLOCKED cc=" + cc + " shuttingDown"); return; }
+    if (cc < 0 || cc > 127) { dbg("  BLOCKED cc out of range: " + cc); return; }
     var ch = CHANNEL;
     if (ch < 1)  { ch = 1; }
     if (ch > 16) { ch = 16; }
     val = clip127(val);
+    dbg("  SEND cc=" + cc + " val=" + val + " ch=" + ch);
     outlet(0, 176 + (ch - 1), cc, val);
     outlet(3, cc, val);
 }
@@ -285,7 +386,10 @@ function initOnce() {
 // Sent once the device is loaded, and again whenever the hardware reconnects.
 function init() {
     if (shuttingDown) { return; }
+    dbgCount = 0;
     lastInit = (new Date()).getTime();
+    dbg("init: banks=" + NBANK + " bank=" + curBank +
+        " base=" + CC_ENCODER_BANKS[curBank] + " shiftBtn=" + SHIFT_BUTTON);
     loadSettings();
     pushUI();
     outlet(1, ADDR_BRIGHT, brightness());
@@ -362,6 +466,7 @@ function reset() {
         }
     }
     sdVal = START_VALUE;
+    for (var q = 0; q <= NENC; q++) { encFrac[q] = 0.0; }
     sendCC(CC_SPEEDDIAL, START_VALUE);
     for (var b = 0; b < NBTN; b++) {
         btn[b] = 0;
@@ -413,6 +518,8 @@ function ccmap() {
     post("  speed dial   : CC " + CC_SPEEDDIAL + "\n");
     post("  crossfader   : CC " + CC_FADER + "\n");
     post("  buttons 1-16 : CC " + CC_BUTTON + "-" + (CC_BUTTON + 15) + "\n");
+    post("  fine mode    : shift button " + SHIFT_BUTTON +
+         ", ratio " + FINE_RATIO + ", accel " + (FINE_ACCEL ? "on" : "off") + "\n");
     var line = "  button modes : ";
     for (var i = 0; i < NBTN; i++) {
         line += (i + 1) + "=" + (modeOf(i) ? "tog" : "mom") + " ";
